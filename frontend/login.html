@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card-login {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 360px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .card-login h2 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 1.5rem;
+            color: #222;
+        }
+
+        .card-login p {
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #444;
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: #333;
+            box-shadow: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            background-color: #222;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 11px;
+            font-size: 1rem;
+            margin-top: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-login:hover { background-color: #444; }
+
+        #mensajeError {
+            color: #dc2626;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.88rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-login">
+        <h2>Sistema de Gestión</h2>
+        <p>Iniciá sesión para continuar</p>
+        <label>Email</label>
+        <input type="email" id="email" class="form-control" placeholder="ejemplo@correo.com">
+        <label>Clave</label>
+        <input type="password" id="clave" class="form-control" placeholder="Ingresá tu clave">
+        <button class="btn-login" onclick="login()">Ingresar</button>
+        <p id="mensajeError">Email o clave incorrectos</p>
+    </div>
+
+    <script>
+        async function login() {
+            const email = document.getElementById("email").value;
+            const clave = document.getElementById("clave").value;
+
+            if (email === "" || clave === "") {
+                document.getElementById("mensajeError").style.display = "block";
+                document.getElementById("mensajeError").innerText = "Completá todos los campos";
+                return;
+            }
+
+            try {
+                const respuesta = await fetch("https://localhost:7001/api/usuarios/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, clave: clave })
+                });
+
+                if (respuesta.ok) {
+                    const usuario = await respuesta.json();
+                    localStorage.setItem("usuario", JSON.stringify(usuario));
+                    window.location.href = "index.html";
+                } else {
+                    document.getElementById("mensajeError").style.display = "block";
+                    document.getElementById("mensajeError").innerText = "Email o clave incorrectos";
+                }
+            } catch (error) {
+                document.getElementById("mensajeError").style.display = "block";
+                document.getElementById("mensajeError").innerText = "No se pudo conectar con el servidor";
+            }
+        }
+    </script>
+
+</body>
+</html>
