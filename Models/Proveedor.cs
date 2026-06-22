@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace WebApi.Models
 {
     public class Proveedor
     {
+        [Key]
         public int IdProveedor { get; set; }
         public string RazonSocial { get; set; }
         public string CUIL { get; set; }
