@@ -263,7 +263,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+
     <div class="modal-overlay" id="modal">
         <div class="modal-box">
             <h3 id="modalTitulo">Nuevo Usuario</h3>
@@ -392,13 +392,13 @@
             const clave = document.getElementById("clave").value;
             const rol = document.getElementById("rol").value;
 
-            // Validacion: campos obligatorios
+          
             if (!email || !clave || !rol) {
                 alert("Email, clave y rol son obligatorios.");
                 return;
             }
 
-            // Validacion: formato de email
+            
             if (!emailValido(email)) {
                 alert("El email no tiene un formato válido.");
                 return;

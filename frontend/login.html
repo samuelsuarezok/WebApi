@@ -102,14 +102,14 @@
 
             const mensajeError = document.getElementById("mensajeError");
 
-            // Validacion: email y clave son requeridos
+            
             if (email === "" || clave === "") {
                 mensajeError.style.display = "block";
                 mensajeError.innerText = "Completá todos los campos";
                 return;
             }
 
-            // Validacion: formato de email
+            
             const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!regexEmail.test(email)) {
                 mensajeError.style.display = "block";

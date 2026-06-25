@@ -158,7 +158,7 @@
             color: #999;
         }
 
-        /* Modal */
+        
         .modal-overlay {
             display: none;
             position: fixed;
@@ -267,7 +267,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+   
     <div class="modal-overlay" id="modal">
         <div class="modal-box">
             <h3 id="modalTitulo">Nuevo Cliente</h3>
@@ -420,13 +420,13 @@
             const apellido = document.getElementById("apellido").value.trim();
             const email = document.getElementById("email").value.trim();
 
-            // Validacion: campos obligatorios
+            
             if (!nombre || !apellido || !email) {
                 alert("Nombre, apellido y email son obligatorios.");
                 return;
             }
 
-            // Validacion: formato de email
+            
             if (!emailValido(email)) {
                 alert("El email no tiene un formato válido.");
                 return;
