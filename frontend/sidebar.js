@@ -28,3 +28,9 @@ function cerrarSesion() {
     localStorage.removeItem("usuario");
     window.location.href = "login.html";
 }
+
+// Valida el formato del email con una expresion regular (no solo el type="email" del navegador)
+function emailValido(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}

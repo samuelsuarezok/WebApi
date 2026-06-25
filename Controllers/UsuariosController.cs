@@ -54,7 +54,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] Usuario datos)
+        public IActionResult Login([FromBody] LoginRequest datos)
         {
             var usuario = _context.Usuarios.FirstOrDefault(u => 
                 u.Email == datos.Email && u.Clave == datos.Clave && u.Activo == true);

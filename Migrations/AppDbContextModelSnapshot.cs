@@ -37,6 +37,10 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DNI")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Direccion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -80,7 +84,7 @@ namespace WebApi.Migrations
                     b.Property<bool>("Activo")
                         .HasColumnType("bit");
 
-                    b.Property<string>("CUIL")
+                    b.Property<string>("CUIT")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

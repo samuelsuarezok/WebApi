@@ -96,35 +96,47 @@
     </div>
 
     <script>
-        async function login() {
+        function login() {
             const email = document.getElementById("email").value;
             const clave = document.getElementById("clave").value;
 
+            const mensajeError = document.getElementById("mensajeError");
+
+            // Validacion: email y clave son requeridos
             if (email === "" || clave === "") {
-                document.getElementById("mensajeError").style.display = "block";
-                document.getElementById("mensajeError").innerText = "Completá todos los campos";
+                mensajeError.style.display = "block";
+                mensajeError.innerText = "Completá todos los campos";
                 return;
             }
 
-            try {
-                const respuesta = await fetch("https://localhost:7001/api/usuarios/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email: email, clave: clave })
-                });
-
-                if (respuesta.ok) {
-                    const usuario = await respuesta.json();
-                    localStorage.setItem("usuario", JSON.stringify(usuario));
-                    window.location.href = "index.html";
-                } else {
-                    document.getElementById("mensajeError").style.display = "block";
-                    document.getElementById("mensajeError").innerText = "Email o clave incorrectos";
-                }
-            } catch (error) {
-                document.getElementById("mensajeError").style.display = "block";
-                document.getElementById("mensajeError").innerText = "No se pudo conectar con el servidor";
+            // Validacion: formato de email
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexEmail.test(email)) {
+                mensajeError.style.display = "block";
+                mensajeError.innerText = "El email no tiene un formato válido";
+                return;
             }
+
+            fetch("https://localhost:7001/api/usuarios/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email, clave: clave })
+            })
+            .then(respuesta => {
+                if (!respuesta.ok) {
+                    throw new Error("Credenciales incorrectas.");
+                }
+                return respuesta.json();
+            })
+            .then(usuario => {
+                localStorage.setItem("usuario", JSON.stringify(usuario));
+                window.location.href = "index.html";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                mensajeError.style.display = "block";
+                mensajeError.innerText = "Email o clave incorrectos";
+            });
         }
     </script>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios</title>
+    <title>Proveedores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -173,7 +173,7 @@
             background: white;
             border-radius: 20px;
             padding: 30px;
-            width: 500px;
+            width: 580px;
             box-shadow: 0 4px 30px rgba(0,0,0,0.15);
         }
 
@@ -237,27 +237,30 @@
 
     <div class="contenido">
         <div class="topbar">
-            <h1>Usuarios</h1>
+            <h1>Proveedores</h1>
             <span id="emailUsuario"></span>
         </div>
 
         <div class="caja">
             <div class="acciones-tabla">
-                <input class="buscador" type="text" id="buscador" placeholder="Buscar por email..." onkeyup="filtrar()">
-                <button class="btn-nuevo" onclick="abrirModalNuevo()">+ Nuevo Usuario</button>
+                <input class="buscador" type="text" id="buscador" placeholder="Buscar por razón social o cuit..." onkeyup="filtrar()">
+                <button class="btn-nuevo" onclick="abrirModalNuevo()">+ Nuevo Proveedor</button>
             </div>
 
             <table>
                 <thead>
                     <tr>
-                        <th>IdUsuario</th>
+                        <th>IdProveedor</th>
+                        <th>Razón Social</th>
+                        <th>CUIT</th>
                         <th>Email</th>
-                        <th>Rol</th>
+                        <th>Teléfono</th>
+                        <th>Rubro</th>
                         <th>Activo</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tablaUsuarios"></tbody>
+                <tbody id="tablaProveedores"></tbody>
             </table>
             <p class="pie-tabla" id="pieTabla"></p>
         </div>
@@ -266,26 +269,40 @@
     <!-- Modal -->
     <div class="modal-overlay" id="modal">
         <div class="modal-box">
-            <h3 id="modalTitulo">Nuevo Usuario</h3>
-            <input type="hidden" id="idUsuario">
+            <h3 id="modalTitulo">Nuevo Proveedor</h3>
+            <input type="hidden" id="idProveedor">
             <div class="form-grid">
+                <div class="form-grupo">
+                    <label>Razón Social *</label>
+                    <input type="text" id="razonSocial" placeholder="Razón Social">
+                </div>
+                <div class="form-grupo">
+                    <label>CUIT *</label>
+                    <input type="text" id="cuit" placeholder="30-12345678-9">
+                </div>
                 <div class="form-grupo">
                     <label>Email *</label>
                     <input type="email" id="email" placeholder="ejemplo@correo.com">
                 </div>
                 <div class="form-grupo">
-                    <label>Clave *</label>
-                    <input type="password" id="clave" placeholder="Ingresá la clave">
+                    <label>Teléfono</label>
+                    <input type="text" id="telefono" placeholder="Teléfono">
                 </div>
                 <div class="form-grupo">
-                    <label>Rol *</label>
-                    <select id="rol">
-                        <option value="">Seleccioná un rol</option>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Ventas">Ventas</option>
-                        <option value="Soporte">Soporte</option>
-                        <option value="Usuario">Usuario</option>
-                    </select>
+                    <label>Dirección</label>
+                    <input type="text" id="direccion" placeholder="Dirección">
+                </div>
+                <div class="form-grupo">
+                    <label>Localidad</label>
+                    <input type="text" id="localidad" placeholder="Localidad">
+                </div>
+                <div class="form-grupo">
+                    <label>Provincia</label>
+                    <input type="text" id="provincia" placeholder="Provincia">
+                </div>
+                <div class="form-grupo">
+                    <label>Rubro *</label>
+                    <input type="text" id="rubro" placeholder="Rubro">
                 </div>
                 <div class="form-grupo">
                     <label>Activo *</label>
@@ -304,40 +321,51 @@
 
     <script src="sidebar.js"></script>
     <script>
-        const API = "https://localhost:7001/api/usuarios";
+        const API = "https://localhost:7001/api/proveedores";
 
         const usuario = localStorage.getItem("usuario");
         if (!usuario) window.location.href = "login.html";
         document.getElementById("emailUsuario").innerText = JSON.parse(usuario).email;
 
-        cargarSidebar("usuarios");
+        cargarSidebar("proveedores");
 
-        let usuarios = [];
+        let proveedores = [];
 
-        async function cargar() {
-            try {
-                const res = await fetch(API);
-                usuarios = await res.json();
-                mostrar(usuarios);
-            } catch {
-                document.getElementById("tablaUsuarios").innerHTML =
-                    `<tr><td colspan="5" style="text-align:center;color:#999">No se pudo conectar con el servidor</td></tr>`;
-            }
+        function cargar() {
+            fetch(API)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error al listar proveedores.");
+                    }
+                    return response.json();
+                })
+                .then(datos => {
+                    proveedores = datos;
+                    mostrar(proveedores);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    document.getElementById("tablaProveedores").innerHTML =
+                        `<tr><td colspan="8" style="text-align:center;color:#999">No se pudo conectar con el servidor</td></tr>`;
+                });
         }
 
         function mostrar(lista) {
-            const tbody = document.getElementById("tablaUsuarios");
+            const tbody = document.getElementById("tablaProveedores");
             tbody.innerHTML = "";
-            lista.forEach(u => {
+            lista.forEach(p => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${u.idUsuario}</td>
-                        <td>${u.email}</td>
-                        <td>${u.rol}</td>
-                        <td><span class="${u.activo ? 'badge-activo' : 'badge-inactivo'}">${u.activo ? 'Sí' : 'No'}</span></td>
+                        <td>${p.idProveedor}</td>
+                        <td>${p.razonSocial}</td>
+                        <td>${p.cuit}</td>
+                        <td>${p.email}</td>
+                        <td>${p.telefono}</td>
+                        <td>${p.rubro}</td>
+                        <td><span class="${p.activo ? 'badge-activo' : 'badge-inactivo'}">${p.activo ? 'Sí' : 'No'}</span></td>
                         <td>
-                            <button class="btn-accion btn-editar" onclick="editar(${u.idUsuario})">✏️ Editar</button>
-                            <button class="btn-accion btn-eliminar" onclick="eliminar(${u.idUsuario})">🗑️ Desactivar</button>
+                            <button class="btn-accion btn-editar" onclick="editar(${p.idProveedor})">✏️ Editar</button>
+                            <button class="btn-accion btn-eliminar" onclick="eliminar(${p.idProveedor})">🗑️ Desactivar</button>
                         </td>
                     </tr>`;
             });
@@ -347,31 +375,37 @@
 
         function filtrar() {
             const texto = document.getElementById("buscador").value.toLowerCase();
-            const filtrados = usuarios.filter(u =>
-                u.email.toLowerCase().includes(texto) ||
-                u.rol.toLowerCase().includes(texto)
+            const filtrados = proveedores.filter(p =>
+                p.razonSocial.toLowerCase().includes(texto) ||
+                p.cuit.toLowerCase().includes(texto) ||
+                p.rubro.toLowerCase().includes(texto)
             );
             mostrar(filtrados);
         }
 
         function abrirModalNuevo() {
-            document.getElementById("modalTitulo").innerText = "Nuevo Usuario";
-            document.getElementById("idUsuario").value = "";
-            document.getElementById("email").value = "";
-            document.getElementById("clave").value = "";
-            document.getElementById("rol").value = "";
+            document.getElementById("modalTitulo").innerText = "Nuevo Proveedor";
+            document.getElementById("idProveedor").value = "";
+            ["razonSocial","cuit","email","telefono","direccion","localidad","provincia","rubro"].forEach(id => {
+                document.getElementById(id).value = "";
+            });
             document.getElementById("activo").value = "true";
             document.getElementById("modal").style.display = "flex";
         }
 
         function editar(id) {
-            const u = usuarios.find(x => x.idUsuario === id);
-            document.getElementById("modalTitulo").innerText = "Editar Usuario";
-            document.getElementById("idUsuario").value = u.idUsuario;
-            document.getElementById("email").value = u.email;
-            document.getElementById("clave").value = u.clave;
-            document.getElementById("rol").value = u.rol;
-            document.getElementById("activo").value = u.activo.toString();
+            const p = proveedores.find(x => x.idProveedor === id);
+            document.getElementById("modalTitulo").innerText = "Editar Proveedor";
+            document.getElementById("idProveedor").value = p.idProveedor;
+            document.getElementById("razonSocial").value = p.razonSocial;
+            document.getElementById("cuit").value = p.cuit;
+            document.getElementById("email").value = p.email;
+            document.getElementById("telefono").value = p.telefono;
+            document.getElementById("direccion").value = p.direccion;
+            document.getElementById("localidad").value = p.localidad;
+            document.getElementById("provincia").value = p.provincia;
+            document.getElementById("rubro").value = p.rubro;
+            document.getElementById("activo").value = p.activo.toString();
             document.getElementById("modal").style.display = "flex";
         }
 
@@ -379,47 +413,101 @@
             document.getElementById("modal").style.display = "none";
         }
 
-        async function guardar() {
-            const email = document.getElementById("email").value;
-            const clave = document.getElementById("clave").value;
-            const rol = document.getElementById("rol").value;
+        function guardar() {
+            const razonSocial = document.getElementById("razonSocial").value.trim();
+            const cuit = document.getElementById("cuit").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const rubro = document.getElementById("rubro").value.trim();
 
-            if (!email || !clave || !rol) {
-                alert("Email, clave y rol son obligatorios");
+            // Validacion: campos obligatorios
+            if (!razonSocial || !cuit || !email || !rubro) {
+                alert("Razón social, CUIT, email y rubro son obligatorios.");
                 return;
             }
 
-            const id = document.getElementById("idUsuario").value;
-            const usuario = {
+            // Validacion: formato de email
+            if (!emailValido(email)) {
+                alert("El email no tiene un formato válido.");
+                return;
+            }
+
+            const id = document.getElementById("idProveedor").value;
+            const proveedor = {
+                razonSocial,
+                cuit,
                 email,
-                clave,
-                rol,
+                telefono: document.getElementById("telefono").value,
+                direccion: document.getElementById("direccion").value,
+                localidad: document.getElementById("localidad").value,
+                provincia: document.getElementById("provincia").value,
+                rubro,
                 activo: document.getElementById("activo").value === "true"
             };
 
-            if (id) {
-                await fetch(`${API}/${id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(usuario)
-                });
+            if (id === "") {
+                crearProveedor(proveedor);
             } else {
-                await fetch(API, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(usuario)
-                });
+                modificarProveedor(id, proveedor);
             }
-
-            cerrarModal();
-            cargar();
         }
 
-        async function eliminar(id) {
-            if (confirm("¿Desactivar este usuario?")) {
-                await fetch(`${API}/${id}`, { method: "DELETE" });
+        function crearProveedor(proveedor) {
+            fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(proveedor)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error al guardar el proveedor.");
+                }
+                cerrarModal();
                 cargar();
+                alert("Proveedor guardado correctamente.");
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Hubo un error al guardar el proveedor.");
+            });
+        }
+
+        function modificarProveedor(id, proveedor) {
+            fetch(API + "/" + id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(proveedor)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error al modificar el proveedor.");
+                }
+                cerrarModal();
+                cargar();
+                alert("Proveedor modificado correctamente.");
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Hubo un error al modificar el proveedor.");
+            });
+        }
+
+        function eliminar(id) {
+            const confirma = confirm("¿Desactivar este proveedor?");
+            if (!confirma) {
+                return;
             }
+            fetch(API + "/" + id, { method: "DELETE" })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error al desactivar el proveedor.");
+                }
+                cargar();
+                alert("Proveedor desactivado correctamente.");
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Hubo un error al desactivar el proveedor.");
+            });
         }
 
         cargar();
